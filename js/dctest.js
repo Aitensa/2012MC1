@@ -1,5 +1,8 @@
 //dc.config.defaultColors(d3.schemeCategory10);
 //let AdmissionChart = new dc.BarChart('#yearly-volume-chart');
+$('#btn').toolbar({
+  content:"#button-options",
+});
 let file_path ="./data/";
 let csv_files = ['part0.csv','part1.csv','part2.csv','part3.csv','part4.csv','part5.csv','part6.csv','part7.csv'];
 let start_t=0,end_t=1; //TODO:  bind with the function to  
