@@ -216,7 +216,267 @@ function main(){
 });
  
 }
+function BrushableLineChart(){
+  var margin = {left:120,top:20,right:20,bottom:20};
+  function LinearChart(data,{
+    x = ([x]) => x, // given d in data, returns the (temporal) x-value
+    y = ([, y]) => y, // given d in data, returns the (quantitative) y-value
+    N = 20, // number of periods for rolling mean
+    K = 2, // number of standard deviations to offset each band
+    curve = d3.curveLinear, // method of interpolation between points
+    marginTop = 20, // top margin, in pixels
+    marginRight = 30, // right margin, in pixels
+    marginBottom = 30, // bottom margin, in pixels
+    marginLeft = 40, // left margin, in pixels
+    width = 640, // outer width, in pixels
+    height = 400, // outer height, in pixels
+    xDomain=undefined, // [xmin, xmax]
+    xRange = [marginLeft, width - marginRight], // [left, right]
+    xAttr=undefined, // The attribute of selected axis x
+    yDomain=undefined, // [ymin, ymax]
+    yRange = [height - marginBottom, marginTop], // [bottom, top]
+    yFormat=undefined, // The format format specifier string for the y-axis
+    yAttr=undefined, // The attribute of selected axis ylabel for the y-axis
+    colors = ["#aaa", "green", "blue", "red"], // color of the 4 lines
+    strokeWidth = 1.5, // width of lines, in pixels
+    strokeLinecap = "round", // stroke line cap of lines
+    strokeLinejoin = "round" // stroke line join of lines
+  }={}){
+    // Compute values.
+    const X = d3.map(data, x);
+    const Y = d3.map(data, y);
+    const I = d3.range(X.length);
 
+    // Compute default domains.
+    if (xDomain === undefined) xDomain = d3.extent(X);
+    if (yDomain === undefined) yDomain = [0, d3.max(Y)];
+
+    // Construct scales and axes.
+    const xScale = d3.scaleUtc(xDomain, xRange);
+    const yScale = d3.scaleLinear(yDomain, yRange);
+    const xAxis = d3.axisBottom(xScale).ticks(width / 80).tickSizeOuter(0);
+    const yAxis = d3.axisLeft(yScale).ticks(null, yFormat);
+
+    // var brush = d3.brushX();
+    
+    // let updateBrush=(sel, data)=>{
+    //   function brushed(event){
+    //     let selection = event.selection;
+    //     if(!event.sourceEvent)return;
+    //     if(selection){
+    //       let [x0,x1]=selection;
+
+    //       let isSelected = d => 
+    //         xScale(d[xAttr])+strokeWidth >= x0 && xScale(d[xAttr]) <=y1;
+
+    //       let filteredData = sel
+    //         .selectAll(".item")
+    //         .style("fill","#ccc")
+    //         .filter(isSelected)
+    //         .style("fill","steelblue")
+    //         .data();
+    //       console.log("lineChart",x1,x0,filteredData);
+          
+    //       onBrush(filteredData);
+    //     }else{
+    //       sel.selectAll(".item").style("fill","steelblue");
+    //       onBrush(null);
+    //     }
+    //   }
+    //   brush
+    //     .extent([
+    //       [0,0], 
+    //       [
+    //         width -margin.left-margin.right, 
+    //         height-margin.top-margin.bottom
+    //       ]
+    //     ])
+
+    //     .on("start brush end",brushed);
+
+    //   sel.select(".brush").call(brush);
+    // };
+    
+    // let onEnter = enter => {
+    //   let svgEnter = enter.append("svg");
+      
+    //   let g = svgEnter.append("g")
+    //     .attr("class","gDrawing");
+    //   g.append("g")
+    //   .attr("class","x-axis")
+    //   .append("text")
+    //   .attr("class","axisLabel");
+    //   g.append("g")
+    //   .attr("class","y-axis")
+    //   .append("text")
+    //   .attr("class","axisLabel");
+    //   g.append("g").attr("class","marks");
+    //   g.append("g").attr("class","brush");
+    //   return svgEnter;
+    // }
+    // let onUpdate = update=>update;
+    // let onExit = exit=>exit.remove();
+
+    // function chart(sel){
+    //   sel.each(data=>{
+    //     let iwidth = width - margin.left - margin.right,
+    //       iheight = height - margin.top -margin.bottom;
+    //     let svg = sel
+    //       .selectAll("svg")
+    //       .data([data])
+    //       .join(onEnter,onUpdate,onExit)
+    //       .attr("viewBox",[0,0,width,height])
+    //       .attr("width",width)
+    //       .attr("height",height);
+    //     let g = svg 
+    //         .select("g")
+    //         .attr("transform",`translate(${margin.left},${margin.top})`);
+    //     xDomain.range([0,iwidth]);
+    //     yDomain.range([0,iheight]);
+    //     updateBrush(sel,data);
+
+    //     let t = g.transition.duration(250);
+
+    //     g.select(".brush").call(brush);
+
+    //     g.select(".y-axis")
+    //       .attr("transform",`translate(0,${iwidth})`)
+    //       .transition(t)
+    //       .call(d3.axisLeft(yScale).ticks(3));
+    //     g.select(".y-axis")
+    //       .select(".axisLabel")
+    //       .style("fill", "black")
+    //       .attr("transform",`translate(${iheight},-10)`)
+    //       .style("text-anchor","end")
+    //       .text(yAttr);
+
+    //     g.select(".x-axis")
+    //       .transition(t)
+    //       .call(d3.axisBottom(xScale).ticks(3));
+    //     g.select(".x-axis")
+    //       .select(".axisLabel")
+    //       .style("fill", "black")
+    //       .style("text-anchor","middle")
+    //       .attr("transform",`translate(0,-10)`)
+    //       .text(xAttr);
+
+    //     let moveItems = item => 
+    //       item
+    //       .attr("x",0)
+    //       .attr("width",d=>xScale(d[xAttr]))
+    //       .attr("y",d=>yScale(d[yAttr]));
+    //     g.select(".marks")
+    //       .selectAll(".item")
+    //       .data(data,(d,i) =>(id!=null?d[id]:i))
+    //       .join(
+    //         enter=>
+    //           enter
+    //             .append("rect")
+    //             .attr("class","item")
+    //             .call(moveItems),
+    //         update => update.call(update=>update.trasition(t).call(moveItems))
+    //       )
+    //       .attr("width",strokeWidth)
+    //       .style("fill","steelblue");
+
+    //   });
+    // }
+
+    // chart.x = function(_){
+    //   if(!argments.length)return xAttr;
+    //   xAttr =_ ;
+    //   return chart;
+    // } 
+    // chart.y = function(_) {
+    //   if (!arguments.length) return yAttr;
+    //   yAttr = _;
+    //   return chart;
+    // };
+    // chart.width = function(_) {
+    //   if (!arguments.length) return width;
+    //   width = _;
+    //   return chart;
+    // };
+    // chart.height = function(_) {
+    //   if (!arguments.length) return height;
+    //   height = _;
+    //   return chart;
+    // };
+    // chart.onBrush = function(_) {
+    //   if (!arguments.length) return onBrush;
+    //   onBrush = _;
+    //   return chart;
+    // };
+    // chart.id = function(_) {
+    //   if (!arguments.length) return id;
+    //   id = _;
+    //   return chart;
+    // };
+  
+    
+    // Construct a line generator.
+    const line = d3.line()
+        .defined((y, i) => !isNaN(X[i]) && !isNaN(y))
+        .curve(curve)
+        .x((y, i) => xScale(X[i]))
+        .y((y, i) => yScale(y));
+    function linear(N,K){
+      return values => {
+      let i = 0;
+      let sum = 0;
+      let sum2 = 0;
+      const Y = new Float64Array(values.length).fill(NaN);
+      for (let n = Math.min(N - 1, values.length); i < n; ++i) {
+        const value = values[i];
+        sum += value, sum2 += value ** 2;
+      }
+      for (let n = values.length; i < n; ++i) {
+        const value = values[i];
+        sum += value, sum2 += value ** 2;
+        const mean = sum / N;
+        const deviation = Math.sqrt((sum2 - sum ** 2 / N) / (N - 1));
+        Y[i] = mean + deviation * K;
+        const value0 = values[i - N + 1];
+        sum -= value0, sum2 -= value0 ** 2;
+      }
+      return Y;
+    }
+  }
+    svg = d3.select("")// TODO: fill the layout element 
+      .attr("width", width)
+      .attr("height", height)
+      .attr("viewBox", [0, 0, width, height])
+      .attr("style", "max-width: 100%; height: auto; height: intrinsic; overflow: visible;");
+    svg.append("g")
+      .attr("transform", `translate(0,${height - marginBottom})`)
+      .call(xAxis);
+
+  svg.append("g")
+      .attr("transform", `translate(${marginLeft},0)`)
+      .call(yAxis)
+      .call(g => g.select(".domain").remove())
+      .call(g => g.selectAll(".tick line").clone()
+          .attr("x2", width - marginLeft - marginRight)
+          .attr("stroke-opacity", 0.1))
+      .call(g => g.append("text")
+          .attr("x", -marginLeft)
+          .attr("y", 10)
+          .attr("fill", "currentColor")
+          .attr("text-anchor", "start")
+          .text(yLabel));
+
+  svg.append("g")
+      .attr("fill", "none")
+      .attr("stroke-width", strokeWidth)
+      .attr("stroke-linejoin", strokeLinejoin)
+      .attr("stroke-linecap", strokeLinecap)
+    .selectAll()
+    .data([Y, ...[-K, 0, +K].map(K => bollinger(N, K)(Y))])
+    .join("path")
+      .attr("stroke", (d, i) => colors[i])
+      .attr("d", line);
+
+} 
 
 
 
@@ -233,7 +493,7 @@ function BrushableBarChart() {
       onBrush = () => {};
   
     //******** Brush******
-    const brush = d3.brushY();
+    var brush = d3.brushY();
   
     const updateBrush = (sel, data) => {
       function brushed(event) {
