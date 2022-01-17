@@ -4,7 +4,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <title>Ming JinShi distribution visualization</title>
+  <title>2012 MC1 Visualization</title>
   <script src="js/jquery.min.js"></script>
   <script src="js/d3.v6.min.js"></script>
   <script src="js/d3.js"></script>
@@ -24,9 +24,9 @@
   <div class="w3-sidebar w3-bar-block w3-card w3-animate-left" style="display:none" id="mySidebar">
     <button class="w3-bar-item w3-button w3-large"
             onclick="w3_close()">Close &times;</button>
-    <a href="#" class="w3-bar-item w3-button">link 1</a>
-    <a href="#" class="w3-bar-item w3-button">link 2</a>
-    <a href="#" class="w3-bar-item w3-button">link 3</a>
+    <a href="#" class="w3-bar-item w3-button" id="sel1" onclick=SwitchView(0)>View 1</a>
+    <a href="#" class="w3-bar-item w3-button" id="sel2" onclick=SwitchView(1)>link 2</a>
+    <a href="#" class="w3-bar-item w3-button" id="sel3" onclick=SwitchView(2)>link 3</a>
 </div>
   <div id="container">
     
@@ -35,13 +35,14 @@
         <button id="openNav" class="w3-bar-item w3-button w3-dark-grey w3-xlarge" onclick="w3_open()">&#9776;</button>
         <tr>
           <h3>
-            <font class="w3-bar-item" style="vertical-align: inherit;">Visualization Of CBDB Ming JinShi DataSets
+            <font class="w3-bar-item" style="vertical-align: inherit;">Visualization Of 2012 MC1 DataSet
             </font>
             </h3>
           </div><input id="range" class="js-range-slider w3-bar-item"  />
             <div class="w3-bar w3-grey">
+              
               <div class="w3-bar-item w3-ripple w3-button w3-white w3-border w3-round" id="ok1" onclick=BtnReset() >Reset</div>
-              <div class="w3-bar-item w3-ripple w3-button w3-white w3-border w3-round" id="ok1" onclick=BtnGetVal() >Yes</div>
+              <div class="w3-bar-item w3-ripple w3-button w3-white w3-border w3-round" id="ok1"  >Yes</div>
               <div class="w3-bar-item w3-ripple w3-button w3-white w3-border w3-round" id="ok1" >Help</div>
             
             <!-- <input type="button" value="Refresh" onClick="history.go(0)" > -->
@@ -62,6 +63,11 @@
     var lang = "en-US";
     var year = 2012;
     var start_t=0,end_t=1,base=1330647300000,st=70484;
+    var eviron=0;//TODO: the var is the selection of environment 
+    /********Nav Environment*******/
+    function SwitchView(id){
+      eviron=id;
+    }
     /******Navi Bar********/
     function BtnReset(){
       document.getElementById("range").reset();
@@ -104,8 +110,7 @@
       let band=data.max-data.min;
       start_t = parseInt((data.from-data.min)/band*191);
       end_t = parseInt((data.to-data.min)/band*191);;
-      console.log("start_t: "+start_t);
-      console.log("end_t: "+end_t);
+      enter();
     }
   });
   </script>

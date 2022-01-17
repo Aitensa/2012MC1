@@ -1,24 +1,18 @@
 //dc.config.defaultColors(d3.schemeCategory10);
 //let AdmissionChart = new dc.BarChart('#yearly-volume-chart');
-$('#btn').toolbar({
-  content:"#button-options",
-});
+
 let file_path ="./data/";
-let csv_files = ['part0.csv','part1.csv','part2.csv','part3.csv','part4.csv','part5.csv','part6.csv','part7.csv'];
-//TODO:  bind with the function to  
-function timer_scaler(start, end){
-  start_t = start ;
-  end_t = end;
-}
+
 function time_test(p){
   let s=new Date.getTime();
   p;
   console.log("Time costs : "+ (new Date.getTime() - s));
   return;
 }
-function main(){
+function enter(){
     let s=new Date().getTime();
     t =[];
+    /*******Load in csv files in Batched***********/ 
     for(let i=start_t;i<=end_t;++i){
       t[i]=d3.csv(file_path+"part"+i+".csv");
     }
@@ -414,7 +408,7 @@ function BrushableLineChart(){
     //   if (!arguments.length) return id;
     //   id = _;
     //   return chart;
-    // };
+   };
   
     
     // Construct a line generator.
@@ -952,4 +946,4 @@ function draw_treemap(data,{
 
 
 
-main();
+enter();
