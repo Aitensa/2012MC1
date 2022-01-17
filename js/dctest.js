@@ -5,7 +5,7 @@ $('#btn').toolbar({
 });
 let file_path ="./data/";
 let csv_files = ['part0.csv','part1.csv','part2.csv','part3.csv','part4.csv','part5.csv','part6.csv','part7.csv'];
-let start_t=0,end_t=1; //TODO:  bind with the function to  
+//TODO:  bind with the function to  
 function timer_scaler(start, end){
   start_t = start ;
   end_t = end;

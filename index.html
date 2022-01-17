@@ -40,8 +40,8 @@
             </h3>
           </div><input id="range" class="js-range-slider w3-bar-item"  />
             <div class="w3-bar w3-grey">
-              <div class="w3-bar-item w3-ripple w3-button w3-white w3-border w3-round" id="ok1" onclick=BtnReset >Reset</div>
-              <div class="w3-bar-item w3-ripple w3-button w3-white w3-border w3-round" id="ok1" onclick=Update>Yes</div>
+              <div class="w3-bar-item w3-ripple w3-button w3-white w3-border w3-round" id="ok1" onclick=BtnReset() >Reset</div>
+              <div class="w3-bar-item w3-ripple w3-button w3-white w3-border w3-round" id="ok1" onclick=BtnGetVal() >Yes</div>
               <div class="w3-bar-item w3-ripple w3-button w3-white w3-border w3-round" id="ok1" >Help</div>
             
             <!-- <input type="button" value="Refresh" onClick="history.go(0)" > -->
@@ -61,10 +61,14 @@
   <script>
     var lang = "en-US";
     var year = 2012;
-    const start_t =0,end_t=1;
+    var start_t=0,end_t=1,base=1330647300000,st=70484;
+    /******Navi Bar********/
     function BtnReset(){
       document.getElementById("range").reset();
-    }
+    } 
+
+
+    /*********Sider Bar*********/
     function w3_open() {
       document.getElementById("container").style.marginLeft = "25%";
       document.getElementById("mySidebar").style.width = "25%";
@@ -80,7 +84,7 @@
     return date.valueOf();
 }
   function tsToDate (ts) {
-      var d = new Date(ts);
+        var d = new Date(ts);
 
       return d.toUTCString();
   }
@@ -89,16 +93,19 @@
     skin: "modern",
     type: "double",
     min_interval:0.05,
-    value_seperator:"-",
     grid: true,
-    min: dateToTS(new Date(year, 2, 2,8,15,0,0)),
-    max: dateToTS(new Date(year, 2, 4,8,0,0,0)),
-    from: dateToTS(new Date(year, 2, 2,8,15,0,0)),
-    to: dateToTS(new Date(year, 2, 3,8,0,0,0)),
+    step:1,
+    min: dateToTS(new Date(year, 2, 2,16,15,0,0)),
+    max: dateToTS(new Date(year, 2, 4,16,0,0,0)),
+    from: dateToTS(new Date(year, 2, 2,16,15,0,0)),
+    to: dateToTS(new Date(year, 2, 3,16,0,0,0)),
     prettify: tsToDate,
-    onUpdate: function(data){
-      start_t=document.getElementById("range").value;
-      console.log(start_t);
+    onChange:function(data){
+      let band=data.max-data.min;
+      start_t = parseInt((data.from-data.min)/band*191);
+      end_t = parseInt((data.to-data.min)/band*191);;
+      console.log("start_t: "+start_t);
+      console.log("end_t: "+end_t);
     }
   });
   </script>
