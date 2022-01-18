@@ -86,8 +86,8 @@
       document.getElementById("mySidebar").style.display = "none";
       document.getElementById("openNav").style.display = "inline-block";
   } 
-  function dateToTS (date) {
-    return date.valueOf();
+  function dateToTS (dat) {
+    return dat.valueOf();
 }
   function tsToDate (ts) {
         var d = new Date(ts);
@@ -104,7 +104,7 @@
     min: dateToTS(new Date(year, 2, 2,16,15,0,0)),
     max: dateToTS(new Date(year, 2, 4,16,0,0,0)),
     from: dateToTS(new Date(year, 2, 2,16,15,0,0)),
-    to: dateToTS(new Date(year, 2, 3,16,0,0,0)),
+    to: dateToTS(new Date(year, 2, 2,19,0,0,0)),
     prettify: tsToDate,
     onChange:function(data){
       let band=data.max-data.min;

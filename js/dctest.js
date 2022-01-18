@@ -3,57 +3,60 @@
 
 let file_path ="./data/";
 
-function time_test(p){
-  let s=new Date.getTime();
-  p;
-  console.log("Time costs : "+ (new Date.getTime() - s));
-  return;
-}
+// function time_test(p){
+//   console.time(p)
+//   p();
+//   console.timeEnd(p);
+// }
 function enter(){
     let s=new Date().getTime();
-    t =[];
+    var csv_files =[];
     /*******Load in csv files in Batched***********/ 
     for(let i=start_t;i<=end_t;++i){
-      t[i]=d3.csv(file_path+"part"+i+".csv");
+      csv_files[i]=d3.csv(file_path+"part"+i+".csv");
     }
-    Promise.all(t)
-    // d3.csv(file_path+"part1.csv")
-    .then(data=>{
-    
+    Promise.all(csv_files)
+    .then(tdata=>{
+    var data =[]
+    tdata.map(function(value,index,array){
+      data=data.concat(value);
+    })
     let e=new Date().getTime();
     console.log("time cost: "+(e-s));
-    time_test(console.log("Success"));
     
     console.log(data);
-    // let totAttib=['year','ssvbject','hometown','Fname','site','class','rank'];
-    // let barAttib = ['year','subject','Fname','site','class','rank'];
-    // let lineAttib=['hometown'];
-    // let treeAttib=['site','Fname'];
-    // //for( key in data[0])barAttib.push(key);
-    // console.log(barAttib);
-    // let mycrossfilter = crossfilter(data);
-    // /** the year data **/
-    // let year =mycrossfilter.dimension(d=>d.year);
-    // let years = year.group();
-    // console.log(years.top(5));
+    let totAttib=["tkey","ipaddr","healthtime","numconnection","policystatus","activityflag"];
+    let barAttib = ["tkey","ipaddr"];
+    let lineAttib=['policystatus'];
+    let treeAttib=["tkey"];
+    //for( key in data[0])barAttib.push(key);
+    console.log(barAttib);
+    let mycrossfilter = crossfilter(data);
+    const disposeHandler = data.onChange(eventType => console.log('data changed:', eventType));
+    // ... then when done with the listener
+    // disposeHandler();
+    /** the year data **/
+    let year =mycrossfilter.dimension(d=>d.tkey);
+    let years = year.group();
+    console.log(years.top(Infinity));
 
-    // /** the site data **/
-    // let site = mycrossfilter.dimension(d=>d.site);
-    // let sites = site.group();
-    // console.log(sites.top(5));
+    /** the site data **/
+    let site = mycrossfilter.dimension(d=>d.ipaddr);
+    let sites = site.group();
+    console.log(sites.top(Infinity));
 
-    // /* the subject data */
-    // let subject = mycrossfilter.dimension(d=>d.subject);
-    // let subjects = subject.group();
-    // console.log(subjects.top(5));
-    // let subjectSort=[];
-    // subjects.all().forEach(d=>{subjectSort.push(d.key)});
-    // console.log(subjectSort);
+    /* the subject data */
+    let subject = mycrossfilter.dimension(d=>d.healthtime);
+    let subjects = subject.group();
+    console.log(subjects.top(Infinity));
+    let subjectSort=[];
+    subjects.all().forEach(d=>{subjectSort.push(d.key)});
+    console.log(subjectSort);
 
-    // /* the rank data */
-    // let rank = mycrossfilter.dimension(d=>d.rank);
-    // let ranks= rank.group();
-    // console.log('rank',rank.top(20));
+    /* the rank data */
+    let rank = mycrossfilter.dimension(d=>d.numconnection);
+    let ranks= rank.group();
+    console.log('rank',rank.top(20));
     
     // mycroslogsfilter.dims=new Map();
     // mycrossfilter.groups=new Map();
