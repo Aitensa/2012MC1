@@ -1,9 +1,10 @@
 var point_data_file = "./data/meta-3-7.csv";
 
-var tree_root = {
-    name: "", 
-    children: new Array(256)
-}
+var tree_root = {};
+tree_root['name'] = "";
+tree_root['ip_index'] = 0;
+tree_root['children'] = Array(256);
+tree_root['color_value'] = 0;
 
 function insert(cur, rest_ip, attr) {
     var t = parseInt(rest_ip[0]);
@@ -16,30 +17,35 @@ function insert(cur, rest_ip, attr) {
     }
     else {
         if(rest_ip.length == 0) {
-            cur.children[t] = {
-                name: cur.name+String(t),
-                item: attr
-            }
+            cur.children[t] = {};
+            cur.children[t]['name']= cur.name+String(t);
+            cur.children[t]['ip_index']= t;
+            cur.children[t]['item']= attr;
+            cur.children[t]['value']= 1;
+            cur.children[t]['color_value'] = 0;
         }
         else if(rest_ip.length == 1) {
             // ip地址的前3位能定位的机器的区域信息
-            cur.children[t] = {
-                name: cur.name+String(t)+".",
-                children: new Array(256),
-                businessunit: attr['businessunit'],
-                facility: attr['facility']
-            }
+            cur.children[t] = {};
+            cur.children[t]['name']= cur.name+String(t)+'.';
+            cur.children[t]['children']= new Array(256);
+            cur.children[t]['ip_index']= t;
+            cur.children[t]['businessunit']= attr['businessunit'];
+            cur.children[t]['facility']= attr['facility'];
+            cur.children[t]['color_value'] = 0;
             insert(cur.children[t], rest_ip, attr);
         }
         else {
-            cur.children[t] = {
-                name: cur.name+String(t)+".",
-                children: new Array(256)
-            }
+            cur.children[t] = {};
+            cur.children[t]['name']= cur.name+String(t)+'.';
+            cur.children[t]['children']= new Array(256);
+            cur.children[t]['ip_index']= t;
+            cur.children[t]['color_value'] = 0;
             insert(cur.children[t], rest_ip, attr);
         }
     }
 }
+// Below two function cannot use.
 function search(cur, rest_ip) {
     if(cur === undefined) {
         return undefined;
